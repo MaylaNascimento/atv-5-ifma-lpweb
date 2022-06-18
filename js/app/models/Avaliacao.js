@@ -3,7 +3,7 @@ class Avaliacao {
     constructor() {
         this._notas = [];
         this._frequencia = 0;
-        this._resultado = 0;
+        this._resultado = Avaliacao.STATUS.EM_AVALIACAO;
     }
 
     get resultado() {
@@ -11,11 +11,20 @@ class Avaliacao {
     }
 
     static get MEDIA () {
-        return 70
+        return 7
+    }
+
+    static get MEDIA_FINAL () {
+        return 5
+    }
+
+    static get MEDIA_REPROVA_DIRETO () {
+        return 3
     }
 
     static get STATUS () {
         return Object.freeze({
+            EM_AVALIACAO: Symbol("em avaliação"),
             APROVADO:   Symbol("Aprovado"),
             REPROVADO:  Symbol("Reprovado"),
             REPROVADO_POR_FALTA: Symbol("Reprovado por falta"),
@@ -47,15 +56,30 @@ class Avaliacao {
             return;
         }
 
-        let mediaAluno = 0;
-        this._notas.forEach((e) => mediaAluno += new Number(e._valor))
+        let mediaAluno = 0, notaFinal = 0,  provaFinal = (this._resultado.toString() == Avaliacao.STATUS.FINAL.toString());
+        this._notas.forEach((e) => {
+            if (e.periodo != PeriodoEnum.FINAL) {
+                mediaAluno += new Number(e._valor);
+            } else {
+                notaFinal = new Number(e._valor);
+            }
+        });
 
-        if (mediaAluno < Avaliacao.MEDIA) {
-            this._resultado = Avaliacao.STATUS.FINAL;
+        let mediaFinal = (mediaAluno / 2);
+        if (!provaFinal && mediaFinal < Avaliacao.MEDIA) {
+            if (mediaFinal <= Avaliacao.MEDIA_REPROVA_DIRETO) {
+                this._resultado = Avaliacao.STATUS.REPROVADO;
+                return;
+            }
+            this._resultado = countNotas == 2 ? Avaliacao.STATUS.FINAL : Avaliacao.STATUS.REPROVADO;
             return;
         }
 
+        notafinal = (mediaFinal + notaFinal) / 2;
+        if (provaFinal && notafinal < Avaliacao.MEDIA_FINAL) {
+            this._resultado =  Avaliacao.STATUS.REPROVADO;
+        }
 
-
+        this._resultado = Avaliacao.STATUS.APROVADO;
     }
 }
