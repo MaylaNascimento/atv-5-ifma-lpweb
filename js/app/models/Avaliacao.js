@@ -71,12 +71,12 @@ class Avaliacao {
                 this._resultado = Avaliacao.STATUS.REPROVADO;
                 return;
             }
-            this._resultado = countNotas == 2 ? Avaliacao.STATUS.FINAL : Avaliacao.STATUS.REPROVADO;
+            this._resultado = Avaliacao.STATUS.FINAL ;
             return;
         }
 
-        notafinal = (mediaFinal + notaFinal) / 2;
-        if (provaFinal && notafinal < Avaliacao.MEDIA_FINAL) {
+        mediaFinal = (mediaFinal + notaFinal) / 2;
+        if (provaFinal && mediaFinal < Avaliacao.MEDIA_FINAL) {
             this._resultado =  Avaliacao.STATUS.REPROVADO;
         }
 
